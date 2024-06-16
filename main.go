@@ -99,7 +99,7 @@ func (p *PlanResource) UpdatePlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("змінено плани")
+	p.s.ToggleCompletion(planId)
 }
 
 type UserResource struct {

@@ -39,17 +39,17 @@ func (s *Storage) GetAllPlans() []Plan {
 func (s *Storage) CreatePlan(p Plan) int {
 	s.m.Lock()
 	defer s.m.Unlock()
-	fmt.Println("Створюємо новий план! Намагаємося")
+
 	s.lastID++
 	p.ID = s.lastID
 	s.allPlans[p.ID] = p
-	fmt.Println("Вуху, план створено! Останній id", s.lastID)
+	// fmt.Println("Вуху, план створено! Останній id", s.lastID)
 	return p.ID
 }
 func (s *Storage) GetPlanById(id int) (Plan, bool) {
 	s.m.Lock()
 	defer s.m.Unlock()
-	fmt.Println("Перевіряємо чи існує план з таким ID")
+	// fmt.Println("Перевіряємо чи існує план з таким ID")
 
 	p, ok := s.allPlans[id]
 
@@ -69,15 +69,21 @@ func (s *Storage) DeletePlanById(id int) bool {
 	return true
 }
 
-// func (s * Storage) UpdatePlanById(id int) bool {
-// 	s.m.Lock()
-// 	defer s.m.Unlock()
-// 	_, ok := s.allPlans[id]
+func (s *Storage) ToggleCompletion(id int) bool {
+	//"Тут ми змінюємо boolean  - змінюємо статус завдання виконане чи ні"
+	s.m.Lock()
+	defer s.m.Unlock()
 
-// 	if !ok {
-// 		return false
-// 	}
-// }
+	plan, ok := s.allPlans[id]
+	if !ok {
+		return false
+	}
+
+	plan.Complete = !plan.Complete
+	s.allPlans[id] = plan
+
+	return true
+}
 
 func (s *Storage) GetUserByUserName(username string) (User, bool) {
 	s.m.Lock()

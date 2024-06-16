@@ -4,7 +4,7 @@ type Plan struct {
 	ID          int
 	Title       string
 	Description string
-	// Username    string
+	Complete    bool
 }
 
 type User struct {
