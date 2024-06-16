@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 
 	mux.HandleFunc("GET /plans", plans.GetAllPlans)
 	mux.HandleFunc("POST /plans", plans.CreatePlan)
+	mux.HandleFunc("DELETE /plans/{id}", plans.DeletePlan)
 
 	fmt.Println("Слухаєм :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
@@ -54,4 +56,22 @@ func (p *PlanResource) CreatePlan(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (p *PlanResource) DeletePlan(w http.ResponseWriter, r *http.Request) {
+	idValue := r.PathValue("id")
+	planId, err := strconv.Atoi(idValue)
+	if err != nil {
+		fmt.Println("Не існує нічого з таким id")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+
+	}
+	_, ok := p.s.GetPlanById(planId)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	p.s.DeletePlanById(planId)
 }

@@ -44,3 +44,25 @@ func (s *Storage) CreatePlan(p Plan) int {
 	fmt.Println("Вуху, план створено! Останній id", s.lastID)
 	return p.ID
 }
+func (s *Storage) GetPlanById(id int) (Plan, bool) {
+	s.m.Lock()
+	defer s.m.Unlock()
+	fmt.Println("Перевіряємо чи існує план з таким ID")
+
+	p, ok := s.allPlans[id]
+
+	return p, ok
+}
+func (s *Storage) DeletePlanById(id int) bool {
+	s.m.Lock()
+	defer s.m.Unlock()
+	fmt.Println("Видаляємо план")
+	_, ok := s.allPlans[id]
+
+	if !ok {
+		return false
+	}
+
+	delete(s.allPlans, id)
+	return true
+}
