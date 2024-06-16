@@ -10,11 +10,13 @@ type Storage struct {
 	m        sync.Mutex
 	lastID   int
 	allPlans map[int]Plan
+	allUsers map[string]User
 }
 
 func NewStorage() *Storage {
 	return &Storage{
 		allPlans: make(map[int]Plan),
+		allUsers: make(map[string]User),
 	}
 }
 
@@ -64,5 +66,28 @@ func (s *Storage) DeletePlanById(id int) bool {
 	}
 
 	delete(s.allPlans, id)
+	return true
+}
+
+func (s *Storage) GetUserByUserName(username string) (User, bool) {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	u, ok := s.allUsers[username]
+
+	return u, ok
+}
+
+func (s *Storage) CreateUser(u User) bool {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	_, ok := s.allUsers[u.Username]
+
+	if ok {
+		return false
+	}
+
+	s.allUsers[u.Username] = u
 	return true
 }

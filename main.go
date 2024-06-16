@@ -9,15 +9,22 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-
+	s := NewStorage()
 	plans := PlanResource{
 		s: NewStorage(),
 	}
 
-	mux.HandleFunc("GET /plans", plans.GetAllPlans)
-	mux.HandleFunc("POST /plans", plans.CreatePlan)
-	mux.HandleFunc("DELETE /plans/{id}", plans.DeletePlan)
-
+	users := UserResource{
+		s: s,
+	}
+	auth := Auth{
+		s: s,
+	}
+	mux.HandleFunc("POST /users", users.CreateUser)
+	mux.HandleFunc("GET /plans", auth.checkAuth(plans.GetAllPlans))
+	mux.HandleFunc("POST /plans", auth.checkAuth(plans.CreatePlan))
+	mux.HandleFunc("DELETE /plans/{id}", auth.checkAuth(plans.DeletePlan))
+	// mux.HandleFunc("POST /plans/{id}", plans.DeletePlan)
 	fmt.Println("Слухаєм :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Невдала спроба створити та прослухати 8080", err)
@@ -74,4 +81,26 @@ func (p *PlanResource) DeletePlan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.s.DeletePlanById(planId)
+}
+
+type UserResource struct {
+	s *Storage
+}
+
+func (ur *UserResource) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var user User
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println("ПОмилка декодування", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	ok := ur.s.CreateUser(user)
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 }
