@@ -69,6 +69,16 @@ func (s *Storage) DeletePlanById(id int) bool {
 	return true
 }
 
+// func (s * Storage) UpdatePlanById(id int) bool {
+// 	s.m.Lock()
+// 	defer s.m.Unlock()
+// 	_, ok := s.allPlans[id]
+
+// 	if !ok {
+// 		return false
+// 	}
+// }
+
 func (s *Storage) GetUserByUserName(username string) (User, bool) {
 	s.m.Lock()
 	defer s.m.Unlock()

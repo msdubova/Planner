@@ -24,7 +24,8 @@ func main() {
 	mux.HandleFunc("GET /plans", auth.checkAuth(plans.GetAllPlans))
 	mux.HandleFunc("POST /plans", auth.checkAuth(plans.CreatePlan))
 	mux.HandleFunc("DELETE /plans/{id}", auth.checkAuth(plans.DeletePlan))
-	// mux.HandleFunc("POST /plans/{id}", plans.DeletePlan)
+	mux.HandleFunc("PUT /plans/{id}", auth.checkAuth(plans.UpdatePlan))
+
 	fmt.Println("Слухаєм :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Невдала спроба створити та прослухати 8080", err)
@@ -81,6 +82,24 @@ func (p *PlanResource) DeletePlan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.s.DeletePlanById(planId)
+}
+
+func (p *PlanResource) UpdatePlan(w http.ResponseWriter, r *http.Request) {
+	idValue := r.PathValue("id")
+	planId, err := strconv.Atoi(idValue)
+	if err != nil {
+		fmt.Println("Не існує нічого з таким id")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+
+	}
+	_, ok := p.s.GetPlanById(planId)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	fmt.Println("змінено плани")
 }
 
 type UserResource struct {

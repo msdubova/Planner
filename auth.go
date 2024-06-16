@@ -24,11 +24,6 @@ func (a *Auth) checkAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// if singleUser.Username != username || singleUser.Password != password {
-		// 	w.WriteHeader(http.StatusUnauthorized)
-		// 	return
-		// }
-
 		next.ServeHTTP(w, r)
 	}
 }
