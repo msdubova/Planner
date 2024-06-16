@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"sort"
+	"sync"
 )
 
 type Storage struct {
+	m        sync.Mutex
 	lastID   int
 	allPlans map[int]Plan
 }
@@ -17,7 +19,8 @@ func NewStorage() *Storage {
 }
 
 func (s *Storage) GetAllPlans() []Plan {
-
+	s.m.Lock()
+	defer s.m.Unlock()
 	var plans = make([]Plan, 0, len(s.allPlans))
 
 	for _, p := range s.allPlans {
@@ -32,6 +35,8 @@ func (s *Storage) GetAllPlans() []Plan {
 }
 
 func (s *Storage) CreatePlan(p Plan) int {
+	s.m.Lock()
+	defer s.m.Unlock()
 	fmt.Println("Створюємо новий план! Намагаємося")
 	s.lastID++
 	p.ID = s.lastID
