@@ -1,9 +1,7 @@
 package main
 
 type Plan struct {
-	ID    int
-	Title string
-	// Deadline    date
+	ID          int
+	Title       string
 	Description string
-	Color       string
 }
