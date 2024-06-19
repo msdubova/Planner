@@ -46,6 +46,7 @@ func (s *Storage) CreatePlan(p Plan) int {
 	// fmt.Println("Вуху, план створено! Останній id", s.lastID)
 	return p.ID
 }
+
 func (s *Storage) GetPlanById(id int) (Plan, bool) {
 	s.m.Lock()
 	defer s.m.Unlock()
@@ -55,6 +56,7 @@ func (s *Storage) GetPlanById(id int) (Plan, bool) {
 
 	return p, ok
 }
+
 func (s *Storage) DeletePlanById(id int) bool {
 	s.m.Lock()
 	defer s.m.Unlock()
@@ -83,6 +85,20 @@ func (s *Storage) ToggleCompletion(id int) bool {
 	s.allPlans[id] = plan
 
 	return true
+}
+
+func (s *Storage) ChangePlan(id int, updatedPlan Plan) bool {
+
+	s.m.Lock()
+	defer s.m.Unlock()
+	_, ok := s.allPlans[id]
+	if !ok {
+		return false
+	}
+
+	s.allPlans[id] = updatedPlan
+	return true
+
 }
 
 func (s *Storage) GetUserByUserName(username string) (User, bool) {

@@ -99,7 +99,23 @@ func (p *PlanResource) UpdatePlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p.s.ToggleCompletion(planId)
+	var UpdatedPlan Plan
+	err = json.NewDecoder(r.Body).Decode(&UpdatedPlan)
+
+	if err != nil {
+		fmt.Println("ПОмилка декодування JSON", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	success := p.s.ChangePlan(planId, UpdatedPlan)
+	if !success {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }
 
 type UserResource struct {
